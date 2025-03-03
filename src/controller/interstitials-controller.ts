@@ -1529,6 +1529,8 @@ MediaSource ${stringify(attachMediaSourceData)} from ${logFromSource}`,
     if (!this.playingLastItem && playingItem) {
       const playingIndex = this.findItemIndex(playingItem);
       this.setSchedulePosition(playingIndex + 1);
+    } else {
+      this.shouldPlay = false;
     }
   }
 
