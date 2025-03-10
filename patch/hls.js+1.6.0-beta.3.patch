@@ -1,0 +1,231 @@
+diff --git a/dist/hls.js b/dist/hls.js
+index bd0cfb3..4c8f070 100644
+--- ./dist/hls.js
++++ ./dist/hls.js
+@@ -2080,6 +2080,9 @@
+           frag = _this2.fragCurrent,
+           part = _this2.partCurrent,
+           hls = _this2.hls;
++        if (!hls) {
++          return;
++        }
+         var autoLevelEnabled = hls.autoLevelEnabled,
+           media = hls.media;
+         if (!frag || !media) {
+@@ -10250,7 +10253,7 @@
+         var previousState = this._state;
+         if (previousState !== nextState) {
+           this._state = nextState;
+-          this.log(previousState + "->" + nextState);
++          // this.log(previousState + "->" + nextState);
+         }
+       }
+     }]);
+@@ -19356,7 +19359,7 @@
+       if (!this.media || !mediaSource || mediaSource.readyState !== 'open') {
+         return;
+       }
+-      if (mediaSource.duration !== duration) {
++      if ((mediaSource.duration !== duration && mediaSource.duration < duration) || !isFiniteNumber(mediaSource.duration)) {
+         if (isFiniteNumber(duration)) {
+           this.log("Updating MediaSource duration to " + duration.toFixed(3));
+         }
+@@ -26114,7 +26117,7 @@
+     if (mode === 'disabled') {
+       track.mode = 'hidden';
+     }
+-    if (track.cues && !track.cues.getCueById(cue.id)) {
++    if (track.cues) {
+       try {
+         track.addCue(cue);
+         if (!track.cues.getCueById(cue.id)) {
+@@ -27130,7 +27133,9 @@
+       var newPos = this.pos + relPos;
+       if (relPos > 1) {
+         for (var i = this.pos + 1; i < newPos + 1; i++) {
+-          this.chars[i].setPenState(this.currPenState);
++          if (this.chars[i]) {
++            this.chars[i].setPenState(this.currPenState);
++          }
+         }
+       }
+       this.setCursor(newPos);
+@@ -27192,7 +27197,9 @@
+     _proto4.setPenStyles = function setPenStyles(styles) {
+       this.currPenState.setStyles(styles);
+       var currChar = this.chars[this.pos];
+-      currChar.setPenState(this.currPenState);
++      if(currChar) {
++        currChar.setPenState(this.currPenState);
++      }
+     };
+     return Row;
+   }();
+@@ -27880,8 +27887,9 @@
+         charCodes = b === 0 ? [a] : [a, b];
+       }
+       if (charCodes) {
++        var codes = charCodes;
+         this.logger.log(3, function () {
+-          return 'Char codes =  ' + numArrayToHexArray(charCodes).join(',');
++          return 'Char codes =  ' + numArrayToHexArray(codes).join(',');
+         });
+       }
+       return charCodes;
+@@ -30341,6 +30349,8 @@
+     appendErrorMaxRetry: 3,
+     // used by buffer-controller
+     loader: XhrLoader,
++    // used by Kepler
++    fetchLoader: FetchLoader,
+     // loader: FetchLoader,
+     fLoader: undefined,
+     // used by fragment-loader
+diff --git a/dist/hls.mjs b/dist/hls.mjs
+index bd0cfb3..4c8f070 100644
+--- ./dist/hls.mjs
++++ ./dist/hls.mjs
+@@ -1338,6 +1338,9 @@
+         partCurrent: part,
+         hls
+       } = this;
++      if (!hls) {
++        return;
++      }
+       const {
+         autoLevelEnabled,
+         media
+@@ -9491,7 +9494,7 @@
+     const previousState = this._state;
+     if (previousState !== nextState) {
+       this._state = nextState;
+-      this.log(`${previousState}->${nextState}`);
++      // this.log(`${previousState}->${nextState}`);
+     }
+   }
+   get state() {
+@@ -18788,7 +18791,7 @@
+     if (!this.media || !mediaSource || mediaSource.readyState !== 'open') {
+       return;
+     }
+-    if (mediaSource.duration !== duration) {
++    if ((mediaSource.duration !== duration && mediaSource.duration < duration) || !isFiniteNumber(mediaSource.duration)) {
+       if (isFiniteNumber(duration)) {
+         this.log(`Updating MediaSource duration to ${duration.toFixed(3)}`);
+       }
+@@ -22145,7 +22148,7 @@
+   if (mode === 'disabled') {
+     track.mode = 'hidden';
+   }
+-  if (track.cues && !track.cues.getCueById(cue.id)) {
++  if (track.cues) {
+     try {
+       track.addCue(cue);
+       if (!track.cues.getCueById(cue.id)) {
+@@ -26262,7 +26265,9 @@
+     const newPos = this.pos + relPos;
+     if (relPos > 1) {
+       for (let i = this.pos + 1; i < newPos + 1; i++) {
+-        this.chars[i].setPenState(this.currPenState);
++        if (this.chars[i]) {
++          this.chars[i].setPenState(this.currPenState);
++        }
+       }
+     }
+     this.setCursor(newPos);
+@@ -26321,7 +26326,9 @@
+   setPenStyles(styles) {
+     this.currPenState.setStyles(styles);
+     const currChar = this.chars[this.pos];
+-    currChar.setPenState(this.currPenState);
++    if(currChar) {
++      currChar.setPenState(this.currPenState);
++    }
+   }
+ }
+
+@@ -26971,7 +26978,8 @@
+       charCodes = b === 0 ? [a] : [a, b];
+     }
+     if (charCodes) {
+-      this.logger.log(3, () => 'Char codes =  ' + numArrayToHexArray(charCodes).join(','));
++      const codes = charCodes;
++      this.logger.log(3, () => 'Char codes =  ' + numArrayToHexArray(codes).join(','));
+     }
+     return charCodes;
+   }
+@@ -29417,6 +29425,8 @@
+   appendErrorMaxRetry: 3,
+   // used by buffer-controller
+   loader: XhrLoader,
++  // used by Kepler
++  fetchLoader: FetchLoader,
+   // loader: FetchLoader,
+   fLoader: undefined,
+   // used by fragment-loader
+diff --git a/dist/hls.d.mts b/dist/hls.d.mts
+index bd0cfb3..4c8f070 100644
+--- ./dist/hls.d.mts
++++ ./dist/hls.d.mts
+@@ -1328,6 +1328,7 @@
+     };
+     readonly type: PlaylistLevelType;
+     loader: Loader<FragmentLoaderContext> | null;
++    fetchLoader: Loader<FragmentLoaderContext> | null;
+     keyLoader: Loader<KeyLoaderContext> | null;
+     level: number;
+     cc: number;
+@@ -1962,6 +1963,9 @@
+     preferManagedMediaSource: boolean;
+     timelineOffset?: number;
+     loader: {
++        new (confg: HlsConfig): Loader<LoaderContext>;
++    };
++    fetchLoader: {
+         new (confg: HlsConfig): Loader<LoaderContext>;
+     };
+     fLoader?: FragmentLoaderConstructor;
+diff --git a/dist/hls.d.ts b/dist/hls.d.ts
+index bd0cfb3..4c8f070 100644
+--- ./dist/hls.d.ts
++++ ./dist/hls.d.ts
+@@ -1328,6 +1328,7 @@
+     };
+     readonly type: PlaylistLevelType;
+     loader: Loader<FragmentLoaderContext> | null;
++    fetchLoader: Loader<FragmentLoaderContext> | null;
+     keyLoader: Loader<KeyLoaderContext> | null;
+     level: number;
+     cc: number;
+@@ -1962,6 +1963,9 @@
+     preferManagedMediaSource: boolean;
+     timelineOffset?: number;
+     loader: {
++        new (confg: HlsConfig): Loader<LoaderContext>;
++    };
++    fetchLoader: {
+         new (confg: HlsConfig): Loader<LoaderContext>;
+     };
+     fLoader?: FragmentLoaderConstructor;
+diff --git a/dist/hls.js.d.ts b/dist/hls.js.d.ts
+index bd0cfb3..4c8f070 100644
+--- ./dist/hls.js.d.ts
++++ ./dist/hls.js.d.ts
+@@ -1328,6 +1328,7 @@
+     };
+     readonly type: PlaylistLevelType;
+     loader: Loader<FragmentLoaderContext> | null;
++    fetchLoader: Loader<FragmentLoaderContext> | null;
+     keyLoader: Loader<KeyLoaderContext> | null;
+     level: number;
+     cc: number;
+@@ -1962,6 +1963,9 @@
+     preferManagedMediaSource: boolean;
+     timelineOffset?: number;
+     loader: {
++        new (confg: HlsConfig): Loader<LoaderContext>;
++    };
++    fetchLoader: {
+         new (confg: HlsConfig): Loader<LoaderContext>;
+     };
+     fLoader?: FragmentLoaderConstructor;

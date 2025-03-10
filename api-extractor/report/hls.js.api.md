@@ -1737,6 +1737,8 @@ export class Fragment extends BaseSegment {
     // (undocumented)
     endPTS?: number;
     // (undocumented)
+    fetchLoader: Loader<FragmentLoaderContext> | null;
+    // (undocumented)
     gap?: boolean;
     // (undocumented)
     initSegment: Fragment | null;
@@ -2177,6 +2179,9 @@ export type HlsConfig = {
     preferManagedMediaSource: boolean;
     timelineOffset?: number;
     loader: {
+        new (confg: HlsConfig): Loader<LoaderContext>;
+    };
+    fetchLoader: {
         new (confg: HlsConfig): Loader<LoaderContext>;
     };
     fLoader?: FragmentLoaderConstructor;

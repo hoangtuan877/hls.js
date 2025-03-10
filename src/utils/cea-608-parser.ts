@@ -425,7 +425,9 @@ export class Row {
     const newPos = this.pos + relPos;
     if (relPos > 1) {
       for (let i = this.pos + 1; i < newPos + 1; i++) {
-        this.chars[i].setPenState(this.currPenState);
+        if (this.chars[i]) {
+          this.chars[i].setPenState(this.currPenState);
+        }
       }
     }
     this.setCursor(newPos);
@@ -501,7 +503,9 @@ export class Row {
   setPenStyles(styles: Partial<PenStyles>) {
     this.currPenState.setStyles(styles);
     const currChar = this.chars[this.pos];
-    currChar.setPenState(this.currPenState);
+    if(currChar) {
+      currChar.setPenState(this.currPenState);
+    }
   }
 }
 
@@ -1329,9 +1333,10 @@ class Cea608Parser {
       charCodes = b === 0 ? [a] : [a, b];
     }
     if (charCodes) {
+      const codes = charCodes;
       this.logger.log(
         VerboseLevel.DEBUG,
-        () => 'Char codes =  ' + numArrayToHexArray(charCodes).join(','),
+        () => 'Char codes =  ' + numArrayToHexArray(codes).join(','),
       );
     }
     return charCodes;

@@ -281,6 +281,7 @@ export type HlsConfig = {
   preferManagedMediaSource: boolean;
   timelineOffset?: number;
   loader: { new (confg: HlsConfig): Loader<LoaderContext> };
+  fetchLoader: { new (confg: HlsConfig): Loader<LoaderContext> };
   fLoader?: FragmentLoaderConstructor;
   pLoader?: PlaylistLoaderConstructor;
   fetchSetup?: (
@@ -398,6 +399,8 @@ export const hlsDefaultConfig: HlsConfig = {
   fpsDroppedMonitoringThreshold: 0.2, // used by fps-controller
   appendErrorMaxRetry: 3, // used by buffer-controller
   loader: XhrLoader,
+   // used by Kepler
+  fetchLoader: FetchLoader,
   // loader: FetchLoader,
   fLoader: undefined, // used by fragment-loader
   pLoader: undefined, // used by playlist-loader

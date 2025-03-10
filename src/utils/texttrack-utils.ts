@@ -21,7 +21,7 @@ export function addCueToTrack(track: TextTrack, cue: VTTCue) {
   if (mode === 'disabled') {
     track.mode = 'hidden';
   }
-  if (track.cues && !track.cues.getCueById(cue.id)) {
+  if (track.cues) {
     try {
       track.addCue(cue);
       if (!track.cues.getCueById(cue.id)) {

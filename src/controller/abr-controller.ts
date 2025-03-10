@@ -229,6 +229,9 @@ class AbrController extends Logger implements AbrComponentAPI {
     */
   private _abandonRulesCheck = () => {
     const { fragCurrent: frag, partCurrent: part, hls } = this;
+    if (!hls) {
+      return;
+    }
     const { autoLevelEnabled, media } = hls;
     if (!frag || !media) {
       return;

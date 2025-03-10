@@ -182,6 +182,7 @@ export class Fragment extends BaseSegment {
   public readonly type: PlaylistLevelType;
   // A reference to the loader. Set while the fragment is loading, and removed afterwards. Used to abort fragment loading
   public loader: Loader<FragmentLoaderContext> | null = null;
+  public fetchLoader: Loader<FragmentLoaderContext> | null = null;
   // A reference to the key loader. Set while the key is loading, and removed afterwards. Used to abort key loading
   public keyLoader: Loader<KeyLoaderContext> | null = null;
   // The level/track index to which the fragment belongs

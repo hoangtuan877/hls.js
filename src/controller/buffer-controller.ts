@@ -3,6 +3,7 @@ import { createDoNothingErrorAction } from './error-controller';
 import { ErrorDetails, ErrorTypes } from '../errors';
 import { Events } from '../events';
 import { ElementaryStreamTypes } from '../loader/fragment';
+import { isFiniteNumber } from '../polyfills/number';
 import { PlaylistLevelType } from '../types/loader';
 import { BufferHelper } from '../utils/buffer-helper';
 import {
@@ -1296,7 +1297,8 @@ transfer tracks: ${JSON.stringify(transferredTracks, (key, value) => (key === 'i
     if (!this.media || !mediaSource || mediaSource.readyState !== 'open') {
       return;
     }
-    if (mediaSource.duration !== duration) {
+    const isValidDuration = mediaSource.duration !== duration && mediaSource.duration < duration;
+    if (isValidDuration || !isFiniteNumber(mediaSource.duration)) {
       if (Number.isFinite(duration)) {
         this.log(`Updating MediaSource duration to ${duration.toFixed(3)}`);
       }

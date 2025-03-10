@@ -2045,7 +2045,7 @@ export default class BaseStreamController
     const previousState = this._state;
     if (previousState !== nextState) {
       this._state = nextState;
-      this.log(`${previousState}->${nextState}`);
+      // this.log(`${previousState}->${nextState}`);
     }
   }
 
