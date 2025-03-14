@@ -1111,14 +1111,16 @@ export default class StreamController
       const buffered = BufferHelper.getBuffered(media);
       const bufferStart = buffered.length ? buffered.start(0) : 0;
       const delta = bufferStart - startPosition;
+      const posDelta = Math.abs(delta);
       const skipTolerance = Math.max(
         this.config.maxBufferHole,
         this.config.maxFragLookUpTolerance,
+        6,
       );
       if (
-        delta > 0 &&
-        (delta < skipTolerance ||
-          (this.loadingParts && delta < 2 * (details?.partTarget || 0)))
+        posDelta > 0 &&
+        (posDelta < skipTolerance ||
+          (this.loadingParts && posDelta < 2 * (details?.partTarget || 0)))
       ) {
         this.log(`adjusting start position by ${delta} to match buffer start`);
         startPosition += delta;
