@@ -973,13 +973,20 @@ export default class StreamController
         this.fragPrevious = frag;
       }
       this.fragBufferedComplete(frag, part);
+    } else if (frag.type === PlaylistLevelType.AUDIO) {
+      this.audioFragPrevious = frag;
     }
 
     const media = this.media;
     if (!media) {
       return;
     }
-    if (!this._hasEnoughToStart && BufferHelper.getBuffered(media).length) {
+    if (
+      !this._hasEnoughToStart &&
+      this.fragPrevious &&
+      this.audioFragPrevious &&
+      BufferHelper.getBuffered(media).length
+    ) {
       this._hasEnoughToStart = true;
       this.seekToStartPos();
     }
@@ -1115,7 +1122,16 @@ export default class StreamController
       }
 
       const buffered = BufferHelper.getBuffered(media);
-      const bufferStart = buffered.length ? buffered.start(0) : 0;
+      const bufferStart = Math.max(
+        buffered.length ? buffered.start(0) : 0,
+        this.fragPrevious?.maxStartPTS && this.fragPrevious.maxStartPTS > 0
+          ? Math.ceil(this.fragPrevious.maxStartPTS * 100) / 100
+          : 0,
+        this.audioFragPrevious?.maxStartPTS &&
+          this.audioFragPrevious.maxStartPTS > 0
+          ? Math.ceil(this.audioFragPrevious.maxStartPTS * 100) / 100
+          : 0,
+      );
       const delta = bufferStart - startPosition;
       const posDelta = Math.abs(delta);
       const skipTolerance = Math.max(
@@ -1522,6 +1538,7 @@ export default class StreamController
     this.flushBufferGap(frag);
     this.fragmentTracker.removeFragment(frag);
     this.fragPrevious = null;
+    this.audioFragPrevious = null;
     this.nextLoadPosition = frag.start;
     this.state = State.IDLE;
   }

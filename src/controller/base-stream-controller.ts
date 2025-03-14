@@ -91,6 +91,7 @@ export default class BaseStreamController
   protected hls: Hls;
 
   protected fragPrevious: MediaFragment | null = null;
+  protected audioFragPrevious: Fragment | null = null;
   protected fragCurrent: Fragment | null = null;
   protected fragmentTracker: FragmentTracker;
   protected transmuxer: TransmuxerInterface | null = null;
@@ -174,6 +175,7 @@ export default class BaseStreamController
     this.resetTransmuxer();
     this.fragCurrent = null;
     this.fragPrevious = null;
+    this.audioFragPrevious = null;
     this.clearInterval();
     this.clearNextTick();
     this.state = State.STOPPED;
@@ -352,6 +354,7 @@ export default class BaseStreamController
             this.resetLoadingState();
           }
           this.fragPrevious = null;
+          this.audioFragPrevious = null;
         }
       }
     }
@@ -1876,6 +1879,7 @@ export default class BaseStreamController
     this.log('Reset loading state');
     this.fragCurrent = null;
     this.fragPrevious = null;
+    this.audioFragPrevious = null;
     if (this.state !== State.STOPPED) {
       this.state = State.IDLE;
     }
